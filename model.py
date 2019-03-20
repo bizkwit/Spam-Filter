@@ -32,21 +32,21 @@ def process_files(folder):
     for document in files:
         categorize(document)
 
-
 def categorize(file):
     """
     categorizes given file whether it is ham file or spam file using regex
     attributes:
     - file: given file to process
     """
-    spam_filter = re.compile("spam")
-    if spam_filter.match(file):
-        SPAM.append(file)
-    else:
+    spam_filter = re.compile("spam",)   #re.compile("spam")
+    if spam_filter.search(file) is None:
         HAM.append(file)
+    else:
+        SPAM.append(file)
 
 
 
-   
+process_files("train")
+build_vocabulary(SPAM)
    
     
