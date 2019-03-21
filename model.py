@@ -15,7 +15,9 @@ def build_vocabulary(category):
         print(path)
         data = open(path,"r")
         for line in data:
-            toPrint = re.split('\[\^a-zA-Z\]', line)
+            toPrint = line.lower()
+            toPrint = re.split('[^a-zA-Z]+', toPrint)
+            print(toPrint)
             
 
 def process_files(folder):
