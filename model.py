@@ -10,10 +10,10 @@ HAM=[]
 #!!!!!!!!!!NOT DONE!!!!!!!!!!!!#
 def build_vocabulary(category):
     for document in category:
-        path = "train\\"
+        path = "train/"
         path += document
         print(path)
-        data = open(path,"r")
+        data = open(path,"r", encoding = "ISO-8859-1")
         for line in data:
             toPrint = line.lower()
             toPrint = re.split('[^a-zA-Z]+', toPrint)
