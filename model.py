@@ -7,6 +7,16 @@ import matplotlib as mpl
 
 SPAM=[]
 HAM=[]
+STOPWORDS =[]
+
+
+#~~~~~~~ HELPER METHOD ~~~~~~~
+def process_stop_word(file):
+    words = open(file, "r")
+    for word in words:
+        STOPWORDS.append(word)
+
+
 #!!!!!!!!!!NOT DONE!!!!!!!!!!!!#
 def build_vocabulary(category):
     for document in category:
