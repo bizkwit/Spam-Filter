@@ -1,5 +1,6 @@
 import numpy as np
 import math as math
+from enum import Enum
 import re as re
 import sys as sys
 import os
@@ -9,6 +10,14 @@ SPAM = []
 HAM = []
 STOPWORDS = []
 
+word_count = [0, 0]
+vocabulary = dict()
+
+
+class Classification(Enum):
+    HAM = 0
+    SPAM = 1
+
 
 # ~~~~~~~ HELPER METHOD ~~~~~~~
 def process_stop_word(file):
@@ -17,8 +26,16 @@ def process_stop_word(file):
         STOPWORDS.append(word)
 
 
+def verify_if_stop_word(word):
+    is_stop_word = False
+    for stop_word in STOPWORDS:
+        if stop_word == word:
+            is_stop_word = True
+            break
+    return is_stop_word
+
 # !!!!!!!!!!NOT DONE!!!!!!!!!!!!#
-def build_vocabulary(category):
+def build_vocabulary(category, classification):
     for document in category:
         path = "train\\"
         path += document
@@ -27,7 +44,23 @@ def build_vocabulary(category):
         for line in data:
             to_print = line.lower()
             to_print = re.split('[^a-zA-Z]+', to_print)
+            prev_word = None
+            for word in to_print:
+                if len(word) == 0:
+                    continue
+                if not verify_if_stop_word(word):
+                    if prev_word is None:
+                        prev_word = word
+                    if word in vocabulary:
+                        if prev_word not in vocabulary[word]:
+                            vocabulary[word][prev_word] = [0, 0]
+                    else:
+                        vocabulary[word] = {word: [0, 0]}
+                        vocabulary[word][prev_word] = [0, 0]
+                    vocabulary[word][prev_word][classification.value] += 1
+                    word_count[classification.value] += 1
             print(to_print)
+    print(vocabulary)
 
 
 def process_files(folder):
@@ -59,4 +92,4 @@ def categorize(file):
 
 
 process_files("train")
-build_vocabulary(SPAM)
+build_vocabulary(SPAM, Classification.SPAM)
