@@ -34,6 +34,7 @@ def verify_if_stop_word(word):
             break
     return is_stop_word
 
+
 # !!!!!!!!!!NOT DONE!!!!!!!!!!!!#
 def build_vocabulary(category, classification):
     for document in category:
@@ -55,12 +56,11 @@ def build_vocabulary(category, classification):
                         if prev_word not in vocabulary[word]:
                             vocabulary[word][prev_word] = [0, 0]
                     else:
-                        vocabulary[word] = {word: [0, 0]}
-                        vocabulary[word][prev_word] = [0, 0]
+                        vocabulary[word] = {word: [0, 0]}   # adding the new word to the vocabulary
+                        vocabulary[word][prev_word] = [0, 0]    # adding the new combination to vocabulary
                     vocabulary[word][prev_word][classification.value] += 1
                     word_count[classification.value] += 1
             print(to_print)
-    print(vocabulary)
 
 
 def process_files(folder):
@@ -93,3 +93,4 @@ def categorize(file):
 
 process_files("train")
 build_vocabulary(SPAM, Classification.SPAM)
+build_vocabulary(HAM, Classification.HAM)
