@@ -20,17 +20,20 @@ def get_list_of_words():
             for line in data:
                 toPrint = line.lower()
                 toPrint = re.split('[^a-zA-Z]+', toPrint)
-                toPrint.remove('')
-                SPAM.extend(toPrint)
+                cleanList = remove_values_from_list(toPrint, '')
+                SPAM.extend(cleanList)
         if "ham" in i:
             data = open(path+i, "r", encoding="ISO-8859-1")
             for line in data:
                 toPrint = line.lower()
                 toPrint = re.split('[^a-zA-Z]+', toPrint)
-                toPrint.remove('')
-                HAM.extend(toPrint)
-    SPAM.sort(reverse=True)
-    HAM.sort(reverse=True)
+                cleanList = remove_values_from_list(toPrint, '')
+                HAM.extend(cleanList)
+    SPAM.sort()
+    HAM.sort()
+
+def remove_values_from_list(the_list, val):
+    return [value for value in the_list if value != val]
 
 def filter_data():
     stopwords = []
@@ -48,8 +51,8 @@ def filter_data():
 
 
 get_list_of_words()
-filtered_ham, filtered_spam = filter_data()
-filtered_spam.sort(reverse=True)
+# filtered_ham, filtered_spam = filter_data()
+# filtered_spam.sort(reverse=True)
 print(SPAM)
 #a_uniq, counts = np.unique(SPAM, return_counts=True)
 #voc = dict(zip(a_uniq, counts))
