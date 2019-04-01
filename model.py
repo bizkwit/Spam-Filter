@@ -36,7 +36,7 @@ def verify_if_stop_word(word):
 
 
 # !!!!!!!!!!NOT DONE!!!!!!!!!!!!#
-def build_vocabulary(category, classification):
+def build_2_gram_vocabulary(category, classification):
     for document in category:
         path = "train\\"
         path += document
@@ -61,6 +61,26 @@ def build_vocabulary(category, classification):
                     vocabulary[word][prev_word][classification.value] += 1
                     word_count[classification.value] += 1
             print(to_print)
+
+
+def build_vocabulary(category, classification):
+    for document in category:
+        path = "train\\"
+        path += document
+        print(path)
+        data = open(path, "r")
+        for line in data:
+            to_print = line.lower()
+            to_print = re.split('[^a-zA-Z]+', to_print)
+            for word in to_print:
+                if len(word) == 0:
+                    continue
+                if not verify_if_stop_word(word):
+                    if word not in vocabulary:
+                        vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
+                    vocabulary[word][classification.value] += 1
+                    word_count[classification.value] += 1
+            # print(to_print)
 
 
 def process_files(folder):
@@ -91,6 +111,21 @@ def categorize(file):
         SPAM.append(file)
 
 
+def print_statistics(smoothing_value=0):
+    i = 0
+    total_vocabulary_words = len(vocabulary)
+    total_vocabulary_words += total_vocabulary_words * smoothing_value
+    ham_word_count = word_count[Classification.HAM.value] + total_vocabulary_words
+    spam_word_count = word_count[Classification.SPAM.value] + total_vocabulary_words
+    for word, frequencies in sorted(vocabulary.items()):
+        i += 1
+        ham_frequency = vocabulary[word][Classification.HAM.value] + smoothing_value
+        spam_frequency = vocabulary[word][Classification.SPAM.value] + smoothing_value
+        print("%d  %s  %d  %g  %d  %g" % (i, word, ham_frequency, ham_frequency/ham_word_count,
+                                          spam_frequency, spam_frequency/spam_word_count))
+
+
 process_files("train")
 build_vocabulary(SPAM, Classification.SPAM)
 build_vocabulary(HAM, Classification.HAM)
+print_statistics(0.5)
