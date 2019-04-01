@@ -40,7 +40,7 @@ def build_2_gram_vocabulary(category, classification):
     for document in category:
         path = "train\\"
         path += document
-        print(path)
+        # print(path)
         data = open(path, "r")
         for line in data:
             to_print = line.lower()
@@ -60,14 +60,14 @@ def build_2_gram_vocabulary(category, classification):
                         vocabulary[word][prev_word] = [0, 0]    # adding the new combination to vocabulary
                     vocabulary[word][prev_word][classification.value] += 1
                     word_count[classification.value] += 1
-            print(to_print)
+            # print(to_print)
 
 
 def build_vocabulary(category, classification):
     for document in category:
         path = "train\\"
         path += document
-        print(path)
+        # print(path)
         data = open(path, "r")
         for line in data:
             to_print = line.lower()
@@ -119,12 +119,12 @@ def print_statistics(smoothing_value=0):
     spam_word_count = word_count[Classification.SPAM.value] + total_vocabulary_words
     for word, frequencies in sorted(vocabulary.items()):
         i += 1
-        ham_frequency = vocabulary[word][Classification.HAM.value] + smoothing_value
-        spam_frequency = vocabulary[word][Classification.SPAM.value] + smoothing_value
-        print("%d  %s  %d  %g  %d  %g" % (i, word, ham_frequency, ham_frequency/ham_word_count,
-                                          spam_frequency, spam_frequency/spam_word_count))
+        ham_word_frequency = vocabulary[word][Classification.HAM.value] + smoothing_value
+        spam_word_frequency = vocabulary[word][Classification.SPAM.value] + smoothing_value
+        print("%d  %s  %d  %g  %d  %g" % (i, word, ham_word_frequency, ham_word_frequency/ham_word_count,
+                                          spam_word_frequency, spam_word_frequency/spam_word_count))
 
-
+print("Training....")
 process_files("train")
 build_vocabulary(SPAM, Classification.SPAM)
 build_vocabulary(HAM, Classification.HAM)
