@@ -123,7 +123,7 @@ def save_model(smoothing_value=0.0, do_print=False):
         ham_word_frequency = vocabulary[word][Classification.HAM.value] + smoothing_value
         spam_word_frequency = vocabulary[word][Classification.SPAM.value] + smoothing_value
         model += ("%d  %s  %g  %g  %g  %g\n" % (i, word, ham_word_frequency, ham_word_frequency/ham_word_count,
-                                          spam_word_frequency, spam_word_frequency/spam_word_count))
+                                                spam_word_frequency, spam_word_frequency/spam_word_count))
     with open('model.txt', 'w') as file:
         file.write(model)
     if do_print:
