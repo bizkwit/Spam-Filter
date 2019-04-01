@@ -111,21 +111,28 @@ def categorize(file):
         SPAM.append(file)
 
 
-def print_statistics(smoothing_value=0):
+def save_model(smoothing_value=0.0, do_print=False):
     i = 0
     total_vocabulary_words = len(vocabulary)
     total_vocabulary_words += total_vocabulary_words * smoothing_value
     ham_word_count = word_count[Classification.HAM.value] + total_vocabulary_words
     spam_word_count = word_count[Classification.SPAM.value] + total_vocabulary_words
+    model = ""
     for word, frequencies in sorted(vocabulary.items()):
         i += 1
         ham_word_frequency = vocabulary[word][Classification.HAM.value] + smoothing_value
         spam_word_frequency = vocabulary[word][Classification.SPAM.value] + smoothing_value
-        print("%d  %s  %d  %g  %d  %g" % (i, word, ham_word_frequency, ham_word_frequency/ham_word_count,
+        model += ("%d  %s  %g  %g  %g  %g\n" % (i, word, ham_word_frequency, ham_word_frequency/ham_word_count,
                                           spam_word_frequency, spam_word_frequency/spam_word_count))
+    with open('model.txt', 'w') as file:
+        file.write(model)
+    if do_print:
+        print(model)
+
+
 
 print("Training....")
 process_files("train")
 build_vocabulary(SPAM, Classification.SPAM)
 build_vocabulary(HAM, Classification.HAM)
-print_statistics(0.5)
+save_model(0.5, True)
