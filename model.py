@@ -180,18 +180,51 @@ def test_classify(category, classification, file_counter = 0, do_print=False, sm
     return file_counter
 
 
-print("Training....")
-process_files("train")
-process_stop_word("English-Stop-Words.txt")
-build_vocabulary(HAM, Classification.HAM, False)
-build_vocabulary(SPAM, Classification.SPAM, False)
-save_model(0.5, False)
-print("Training DONE!")
+def task_selection():
+    run_again = True
+    while run_again:
+        print("============================================================")
+        print("\t\t\t\t SPAM FILTER - MAIN MENU")
+        print("============================================================")
+        print("Here are your option:\n\t 1. Task 1: Building the model \n\t 2. Task 2: Building and evaluating the classifier\n\t 3. Task 3: Experiment with your Classifier")
+        user_input = input("Please choose your task (1-3): ")
+        if user_input is "1":
+            print("Running Task 1\n")
+            print("Training....")
+            process_files("train")
+            process_stop_word("English-Stop-Words.txt")
+            build_vocabulary(HAM, Classification.HAM, False)
+            build_vocabulary(SPAM, Classification.SPAM, False)
+            save_model(0.5, False)
+            print("Training DONE!\n")
+            answer = input("would you like to run another task? (y/n): ")
+            if answer == "n":
+                print("GoodBye")
+                run_again = False
+        elif user_input is "2":
+            print("Running Task 2\n")
 
-print("Testing....")
-HAM = []
-SPAM = []
-process_files("test")
-file_counter = 0
-file_counter = test_classify(HAM, Classification.HAM, file_counter, True)
-test_classify(SPAM, Classification.SPAM, file_counter, True)
+            print("Testing....")
+            process_files("train")
+            process_stop_word("English-Stop-Words.txt")
+            build_vocabulary(HAM, Classification.HAM, False)
+            build_vocabulary(SPAM, Classification.SPAM, False)
+            HAM.clear()
+            SPAM.clear()
+            process_files("test")
+            file_counter = 0
+            file_counter = test_classify(HAM, Classification.HAM, file_counter, False)
+            test_classify(SPAM, Classification.SPAM, file_counter, False)
+            print("Testing DONE!\n")
+            answer = input("would you like to run another task? (y/n): ")
+            if answer == "n":
+                print("GoodBye")
+                run_again = False
+        elif user_input is "3":
+            print("Running task 3\n")
+            answer = input("would you like to run another task? (y/n): ")
+            if answer == "n":
+                print("GoodBye")
+                run_again = False
+
+task_selection()
