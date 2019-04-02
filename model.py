@@ -130,23 +130,21 @@ def save_model(smoothing_value=0.0, do_print=False):
         print(model)
 
 
-def test_classify(category, classification, smoothing_value=0.5):
+def test_classify(category, classification, file_counter = 0, do_print=False, smoothing_value=0.5):
     num_spam_emails = len(SPAM)
     num_hum_emails = len(HAM)
-    i = 0
     total_vocabulary_words = len(vocabulary)
     total_vocabulary_words += total_vocabulary_words * smoothing_value
     ham_word_count = word_count[Classification.HAM.value] + total_vocabulary_words
     spam_word_count = word_count[Classification.SPAM.value] + total_vocabulary_words
-    classified_email = ""
+    classified_emails = ""
     for document in category:
-        i += 1
+        file_counter += 1
         path = "test\\"
         path += document
         ham_probability = math.log10(num_hum_emails/(num_spam_emails + num_hum_emails))
         spam_probability = math.log10(num_spam_emails/(num_spam_emails + num_hum_emails))
         data = open(path, "r", encoding="Latin1")
-        print("Document: " + document)
         for line in data:
             line = line.lower()
             line = re.split('[^a-zA-Z]+', line)
@@ -158,7 +156,6 @@ def test_classify(category, classification, smoothing_value=0.5):
                     spam_word_probability = (vocabulary[word][Classification.SPAM.value] + smoothing_value)/spam_word_count
                     ham_probability += math.log10(ham_word_probability)
                     spam_probability += math.log10(spam_word_probability)
-
         if ham_probability > spam_probability:
             file_classification = Classification.HAM
         else:
@@ -167,10 +164,15 @@ def test_classify(category, classification, smoothing_value=0.5):
             right_wrong = "wrong"
         else:
             right_wrong = "right"
-        classified_email += ("%d  %s  %s  %g  %g  %s  %s\n" % (i, document, file_classification.name.lower(),
-                                                               ham_probability, spam_probability,
-                                                               classification.name.lower(), right_wrong))
-        print(classified_email)
+        classified_email = ("%d  %s  %s  %g  %g  %s  %s\n" % (file_counter, document, file_classification.name.lower(),
+                                                              ham_probability, spam_probability,
+                                                              classification.name.lower(), right_wrong))
+        classified_emails += classified_email
+    with open('baseline-result.txt', 'a') as file:
+        file. write(classified_emails)
+    if do_print:
+        print(classified_emails.rstrip())
+    return file_counter
 
 
 print("Training....")
@@ -179,10 +181,12 @@ process_stop_word("English-Stop-Words.txt")
 build_vocabulary(HAM, Classification.HAM)
 build_vocabulary(SPAM, Classification.SPAM)
 save_model(0.5, False)
+print("Training DONE!")
 
 print("Testing....")
 HAM = []
 SPAM = []
 process_files("test")
-test_classify(HAM, Classification.HAM)
-test_classify(SPAM, Classification.SPAM)
+file_counter = 0
+file_counter = test_classify(HAM, Classification.HAM, file_counter, True)
+test_classify(SPAM, Classification.SPAM, file_counter, True)
