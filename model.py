@@ -63,7 +63,7 @@ def build_2_gram_vocabulary(category, classification):
             # print(to_print)
 
 
-def build_vocabulary(category, classification, filterStopWords):
+def build_vocabulary(category, classification, filter_stop_words):
     for document in category:
         path = "train\\"
         path += document
@@ -75,16 +75,14 @@ def build_vocabulary(category, classification, filterStopWords):
             for word in to_print:
                 if len(word) == 0:
                     continue
-                if not filterStopWords:
+                is_stop_word = False
+                if filter_stop_words:
+                    is_stop_word = verify_if_stop_word(word)
+                if not is_stop_word:
                     if word not in vocabulary:
                         vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
                     vocabulary[word][classification.value] += 1
-                    word_count[classification.value] += 1
-                elif not verify_if_stop_word(word):
-                    if word not in vocabulary:
-                        vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
-                    vocabulary[word][classification.value] += 1
-                    word_count[classification.value] += 1
+                    word_count[classification.value] += 1                
             # print(to_print)
 
 
