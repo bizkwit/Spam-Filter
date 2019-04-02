@@ -63,28 +63,26 @@ def build_2_gram_vocabulary(category, classification):
             # print(to_print)
 
 
-def build_vocabulary(category, classification, filterStopWords):
+def build_vocabulary(category, classification, filter_stop_words):
     for document in category:
         path = "train\\"
         path += document
         # print(path)
-        data = open(path, "r", encoding="ISO-8859-1")
+        data = open(path, "r", encoding="Latin-1")
         for line in data:
             to_print = line.lower()
             to_print = re.split('[^a-zA-Z]+', to_print)
             for word in to_print:
                 if len(word) == 0:
                     continue
-                if not filterStopWords:
+                is_stop_word = False
+                if filter_stop_words:
+                    is_stop_word = verify_if_stop_word(word)
+                if not is_stop_word:
                     if word not in vocabulary:
                         vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
                     vocabulary[word][classification.value] += 1
-                    word_count[classification.value] += 1
-                elif not verify_if_stop_word(word):
-                    if word not in vocabulary:
-                        vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
-                    vocabulary[word][classification.value] += 1
-                    word_count[classification.value] += 1
+                    word_count[classification.value] += 1                
             # print(to_print)
 
 
@@ -149,7 +147,7 @@ def test_classify(category, classification, file_counter = 0, do_print=False, sm
         path += document
         ham_probability = math.log10(num_hum_emails/(num_spam_emails + num_hum_emails))
         spam_probability = math.log10(num_spam_emails/(num_spam_emails + num_hum_emails))
-        data = open(path, "r", encoding="Latin1")
+        data = open(path, "r", encoding="Latin-1")
         for line in data:
             line = line.lower()
             line = re.split('[^a-zA-Z]+', line)
