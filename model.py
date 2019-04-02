@@ -68,7 +68,7 @@ def build_vocabulary(category, classification, filter_stop_words):
         path = "train\\"
         path += document
         # print(path)
-        data = open(path, "r", encoding="ISO-8859-1")
+        data = open(path, "r", encoding="Latin-1")
         for line in data:
             to_print = line.lower()
             to_print = re.split('[^a-zA-Z]+', to_print)
@@ -147,7 +147,7 @@ def test_classify(category, classification, file_counter = 0, do_print=False, sm
         path += document
         ham_probability = math.log10(num_hum_emails/(num_spam_emails + num_hum_emails))
         spam_probability = math.log10(num_spam_emails/(num_spam_emails + num_hum_emails))
-        data = open(path, "r", encoding="Latin1")
+        data = open(path, "r", encoding="Latin-1")
         for line in data:
             line = line.lower()
             line = re.split('[^a-zA-Z]+', line)
