@@ -63,19 +63,24 @@ def build_2_gram_vocabulary(category, classification):
             # print(to_print)
 
 
-def build_vocabulary(category, classification):
+def build_vocabulary(category, classification, filterStopWords):
     for document in category:
         path = "train\\"
         path += document
         # print(path)
-        data = open(path, "r")
+        data = open(path, "r", encoding="ISO-8859-1")
         for line in data:
             to_print = line.lower()
             to_print = re.split('[^a-zA-Z]+', to_print)
             for word in to_print:
                 if len(word) == 0:
                     continue
-                if not verify_if_stop_word(word):
+                if not filterStopWords:
+                    if word not in vocabulary:
+                        vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
+                    vocabulary[word][classification.value] += 1
+                    word_count[classification.value] += 1
+                elif not verify_if_stop_word(word):
                     if word not in vocabulary:
                         vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
                     vocabulary[word][classification.value] += 1
@@ -178,8 +183,8 @@ def test_classify(category, classification, file_counter = 0, do_print=False, sm
 print("Training....")
 process_files("train")
 process_stop_word("English-Stop-Words.txt")
-build_vocabulary(HAM, Classification.HAM)
-build_vocabulary(SPAM, Classification.SPAM)
+build_vocabulary(HAM, Classification.HAM, False)
+build_vocabulary(SPAM, Classification.SPAM, False)
 save_model(0.5, False)
 print("Training DONE!")
 
