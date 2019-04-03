@@ -35,35 +35,8 @@ def verify_if_stop_word(word):
     return is_stop_word
 
 
-# !!!!!!!!!!NOT DONE!!!!!!!!!!!!#
-def build_2_gram_vocabulary(category, classification):
-    for document in category:
-        path = "train\\"
-        path += document
-        # print(path)
-        data = open(path, "r")
-        for line in data:
-            to_print = line.lower()
-            to_print = re.split('[^a-zA-Z]+', to_print)
-            prev_word = None
-            for word in to_print:
-                if len(word) == 0:
-                    continue
-                if not verify_if_stop_word(word):
-                    if prev_word is None:
-                        prev_word = word
-                    if word in vocabulary:
-                        if prev_word not in vocabulary[word]:
-                            vocabulary[word][prev_word] = [0, 0]
-                    else:
-                        vocabulary[word] = {word: [0, 0]}   # adding the new word to the vocabulary
-                        vocabulary[word][prev_word] = [0, 0]    # adding the new combination to vocabulary
-                    vocabulary[word][prev_word][classification.value] += 1
-                    word_count[classification.value] += 1
-            # print(to_print)
 
-
-def build_vocabulary(category, classification, filter_stop_words):
+def build_vocabulary(category, classification, filter_stop_words,filter_word_length):
     for document in category:
         path = "train\\"
         path += document
@@ -73,8 +46,9 @@ def build_vocabulary(category, classification, filter_stop_words):
             to_print = line.lower()
             to_print = re.split('[^a-zA-Z]+', to_print)
             for word in to_print:
-                if len(word) == 0:
-                    continue
+                if filter_word_length or len(word)==0:
+                    if len(word)==0 or len(word)<=2 or len(word)>=9:
+                        continue
                 if not filter_stop_words:
                     if word not in vocabulary:
                         vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
@@ -195,8 +169,8 @@ def task_selection():
             print("Training....")
             process_files("train")
             process_stop_word("English-Stop-Words.txt")
-            build_vocabulary(HAM, Classification.HAM, False)
-            build_vocabulary(SPAM, Classification.SPAM, False)
+            build_vocabulary(HAM, Classification.HAM, False, False)
+            build_vocabulary(SPAM, Classification.SPAM, False, False)
             with open('model.txt', 'w') as file:
                 file. write('')
             save_model('model.txt',0.5, False)
@@ -213,8 +187,8 @@ def task_selection():
             print("Testing....")
             process_files("train")
             process_stop_word("English-Stop-Words.txt")
-            build_vocabulary(HAM, Classification.HAM, False)
-            build_vocabulary(SPAM, Classification.SPAM, False)
+            build_vocabulary(HAM, Classification.HAM, False, False)
+            build_vocabulary(SPAM, Classification.SPAM, False, False)
             HAM.clear()
             SPAM.clear()
             process_files("test")
@@ -231,13 +205,13 @@ def task_selection():
         #//////////////TASK 3\\\\\\\\\\\\\\\
         #~~~~~~~ NOT DONE ~~~~~~~
         elif user_input is "3":
-            HAM.clear()
-            SPAM.clear()
             print("Running task 3: experiments \n")
             experiment_run = True
             while experiment_run:
                 u_input = input("which experiment would you like to run? (2-5):")
                 if u_input == "2":
+                    HAM.clear()
+                    SPAM.clear()
                     print("running Experiment 2 : Stop-word Filtering")
                     process_files("train")
                     process_stop_word("English-Stop-Words.txt")
@@ -256,16 +230,35 @@ def task_selection():
                         experiment_run = False
                 
                 elif u_input == "3":
+                    HAM.clear()
+                    SPAM.clear()
+                    print("running Experiment 3 : Word Length Filtering")
+                    process_files("train")
+                    process_stop_word("English-Stop-Words.txt")
+                    build_vocabulary(HAM, Classification.HAM, True, True)
+                    build_vocabulary(SPAM, Classification.SPAM, True, True)
+                    save_model('wordlength-model.txt',0.5,False)
+                    HAM.clear()
+                    SPAM.clear()
+                    process_files("test")
+                    file_counter = 0
+                    file_counter = test_classify('wordlength-result.txt', HAM, Classification.HAM, file_counter, False)
+                    test_classify('wordlength-result.txt', SPAM, Classification.SPAM, file_counter, False)
+                    print("Experiment DONE!")
                     answer2 = input("run another experiemnt? (y/n): ")
                     if answer2 == "n":
                         experiment_run = False
                 
                 elif u_input == "4":
+                    HAM.clear()
+                    SPAM.clear()
                     answer2 = input("run another experiemnt? (y/n): ")
                     if answer2 == "n":
                         experiment_run = False
                
                 elif u_input == "5":
+                    HAM.clear()
+                    SPAM.clear()
                     answer2 = input("run another experiemnt? (y/n): ")
                     if answer2 == "n":
                         experiment_run = False
