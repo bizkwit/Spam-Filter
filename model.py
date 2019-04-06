@@ -1,10 +1,7 @@
-import numpy as np
 import math as math
 from enum import Enum
 import re as re
-import sys as sys
 import os
-import matplotlib as mpl
 
 SPAM = []
 HAM = []
@@ -35,8 +32,7 @@ def verify_if_stop_word(word):
     return is_stop_word
 
 
-
-def build_vocabulary(category, classification, filter_stop_words,filter_word_length):
+def build_vocabulary(category, classification, filter_stop_words, filter_word_length):
     for document in category:
         path = "train/"
         path += document
@@ -46,17 +42,15 @@ def build_vocabulary(category, classification, filter_stop_words,filter_word_len
             to_print = line.lower()
             to_print = re.split('[^a-zA-Z]+', to_print)
             for word in to_print:
-                if filter_word_length or len(word)==0:
-                    if len(word)==0 or len(word)<=2 or len(word)>=9:
+                if filter_word_length or len(word) == 0:
+                    if len(word) == 0 or len(word) <= 2 or len(word) >= 9:
                         continue
-                if not filter_stop_words:
+                is_stop_word = False
+                if filter_stop_words:
+                    is_stop_word = verify_if_stop_word(word)
+                if not is_stop_word:
                     if word not in vocabulary:
-                        vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
-                    vocabulary[word][classification.value] += 1
-                    word_count[classification.value] += 1
-                elif not verify_if_stop_word(word):
-                    if word not in vocabulary:
-                        vocabulary[word] = [0, 0]    # adding the new combination to vocabulary
+                        vocabulary[word] = [0, 0]  # adding the new combination to vocabulary
                     vocabulary[word][classification.value] += 1
                     word_count[classification.value] += 1
 
@@ -101,16 +95,16 @@ def save_model(file_name, smoothing_value=0.0, do_print=False):
         ham_word_frequency = vocabulary[word][Classification.HAM.value]
         spam_word_frequency = vocabulary[word][Classification.SPAM.value]
         model += ("%d  %s  %g  %g  %g  %g\n" % (i, word, ham_word_frequency,
-                                                (ham_word_frequency + smoothing_value)/ham_word_count,
+                                                (ham_word_frequency + smoothing_value) / ham_word_count,
                                                 spam_word_frequency,
-                                                (spam_word_frequency + smoothing_value)/spam_word_count))
+                                                (spam_word_frequency + smoothing_value) / spam_word_count))
     with open(file_name, 'w') as file:
         file.write(model)
     if do_print:
         print(model)
 
 
-def test_classify(file_name, category, classification, file_counter = 0, do_print=False, smoothing_value=0.5):
+def test_classify(file_name, category, classification, file_counter=0, do_print=False, smoothing_value=0.5):
     num_spam_emails = len(SPAM)
     num_hum_emails = len(HAM)
     total_vocabulary_words = len(vocabulary)
@@ -122,8 +116,8 @@ def test_classify(file_name, category, classification, file_counter = 0, do_prin
         file_counter += 1
         path = "test\\"
         path += document
-        ham_probability = math.log10(num_hum_emails/(num_spam_emails + num_hum_emails))
-        spam_probability = math.log10(num_spam_emails/(num_spam_emails + num_hum_emails))
+        ham_probability = math.log10(num_hum_emails / (num_spam_emails + num_hum_emails))
+        spam_probability = math.log10(num_spam_emails / (num_spam_emails + num_hum_emails))
         data = open(path, "r", encoding="Latin-1")
         for line in data:
             line = line.lower()
@@ -132,8 +126,8 @@ def test_classify(file_name, category, classification, file_counter = 0, do_prin
                 if len(word) == 0:
                     continue
                 if not verify_if_stop_word(word) and word in vocabulary:
-                    ham_word_probability = (vocabulary[word][Classification.HAM.value] + smoothing_value)/ham_word_count
-                    spam_word_probability = (vocabulary[word][Classification.SPAM.value] + smoothing_value)/spam_word_count
+                    ham_word_probability = (vocabulary[word][Classification.HAM.value]+smoothing_value)/ham_word_count
+                    spam_word_probability =(vocabulary[word][Classification.SPAM.value]+smoothing_value)/spam_word_count
                     ham_probability += math.log10(ham_word_probability)
                     spam_probability += math.log10(spam_word_probability)
         if ham_probability > spam_probability:
@@ -149,7 +143,7 @@ def test_classify(file_name, category, classification, file_counter = 0, do_prin
                                                               classification.name.lower(), right_wrong))
         classified_emails += classified_email
     with open(file_name, 'a') as file:
-        file. write(classified_emails)
+        file.write(classified_emails)
     if do_print:
         print(classified_emails.rstrip())
     return file_counter
@@ -161,9 +155,12 @@ def task_selection():
         print("=================================================================")
         print("\t\t\t SPAM FILTER - MAIN MENU")
         print("=================================================================")
-        print("Here are your option:\n\t 1. Task 1: Building the model \n\t 2. Task 2: Building and evaluating the classifier\n\t 3. Task 3: Experiment with your Classifier")
+        print( "Here are your option:\n" +
+               "\t 1. Task 1: Building the model \n" +
+               "\t 2. Task 2: Building and evaluating the classifier\n" +
+               "\t 3. Task 3: Experiment with your Classifier")
         user_input = input("Please choose your task (1-3): ")
-        #//////////////TASK 1\\\\\\\\\\\\\\\
+        # //////////////TASK 1\\\\\\\\\\\\\\\
         if user_input is "1":
             HAM.clear()
             SPAM.clear()
@@ -174,14 +171,14 @@ def task_selection():
             build_vocabulary(HAM, Classification.HAM, False, False)
             build_vocabulary(SPAM, Classification.SPAM, False, False)
             with open('model.txt', 'w') as file:
-                file. write('')
-            save_model('model.txt',0.5, False)
+                file.write('')
+            save_model('model.txt', 0.5, False)
             print("Training DONE!\n")
             answer = input("would you like to run another task? (y/n): ")
             if answer == "n":
                 print("GoodBye")
                 run_again = False
-        #//////////////TASK 2\\\\\\\\\\\\\\\
+        # //////////////TASK 2\\\\\\\\\\\\\\\
         elif user_input is "2":
             HAM.clear()
             SPAM.clear()
@@ -196,7 +193,7 @@ def task_selection():
             process_files("test")
             file_counter = 0
             with open('baseline-result.txt', 'w') as file:
-                file. write('')
+                file.write('')
             file_counter = test_classify('baseline-result.txt', HAM, Classification.HAM, file_counter, False)
             test_classify('baseline-result.txt', SPAM, Classification.SPAM, file_counter, False)
             print("Testing DONE!\n")
@@ -204,8 +201,8 @@ def task_selection():
             if answer == "n":
                 print("GoodBye")
                 run_again = False
-        #//////////////TASK 3\\\\\\\\\\\\\\\
-        #~~~~~~~ NOT DONE ~~~~~~~
+        # //////////////TASK 3\\\\\\\\\\\\\\\
+        # ~~~~~~~ NOT DONE ~~~~~~~
         elif user_input is "3":
             print("Running task 3: experiments \n")
             experiment_run = True
@@ -219,7 +216,7 @@ def task_selection():
                     process_stop_word("English-Stop-Words.txt")
                     build_vocabulary(HAM, Classification.HAM, True, False)
                     build_vocabulary(SPAM, Classification.SPAM, True, False)
-                    save_model('stopword-model.txt',0.5,False)
+                    save_model('stopword-model.txt', 0.5, False)
                     HAM.clear()
                     SPAM.clear()
                     process_files("test")
@@ -239,7 +236,7 @@ def task_selection():
                     process_stop_word("English-Stop-Words.txt")
                     build_vocabulary(HAM, Classification.HAM, True, True)
                     build_vocabulary(SPAM, Classification.SPAM, True, True)
-                    save_model('wordlength-model.txt',0.5,False)
+                    save_model('wordlength-model.txt', 0.5, False)
                     HAM.clear()
                     SPAM.clear()
                     process_files("test")
@@ -251,10 +248,10 @@ def task_selection():
                     if answer2 == "n":
                         experiment_run = False
 
-
             answer = input("would you like to run another task? (y/n): ")
             if answer == "n":
                 print("GoodBye")
                 run_again = False
+
 
 task_selection()
