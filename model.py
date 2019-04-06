@@ -208,7 +208,7 @@ def task_selection():
             print("Running task 3: experiments \n")
             experiment_run = True
             while experiment_run:
-                u_input = input("which experiment would you like to run? (2-5):")
+                u_input = input("which experiment would you like to run? (2 or 3):")
                 if u_input == "2":
                     HAM.clear()
                     SPAM.clear()
@@ -245,20 +245,6 @@ def task_selection():
                     file_counter = test_classify('wordlength-result.txt', HAM, Classification.HAM, file_counter, False)
                     test_classify('wordlength-result.txt', SPAM, Classification.SPAM, file_counter, False)
                     print("Experiment DONE!")
-                    answer2 = input("run another experiemnt? (y/n): ")
-                    if answer2 == "n":
-                        experiment_run = False
-
-                elif u_input == "4":
-                    HAM.clear()
-                    SPAM.clear()
-                    answer2 = input("run another experiemnt? (y/n): ")
-                    if answer2 == "n":
-                        experiment_run = False
-
-                elif u_input == "5":
-                    HAM.clear()
-                    SPAM.clear()
                     answer2 = input("run another experiemnt? (y/n): ")
                     if answer2 == "n":
                         experiment_run = False
