@@ -98,10 +98,12 @@ def save_model(file_name, smoothing_value=0.0, do_print=False):
     model = ""
     for word, frequencies in sorted(vocabulary.items()):
         i += 1
-        ham_word_frequency = vocabulary[word][Classification.HAM.value] + smoothing_value
-        spam_word_frequency = vocabulary[word][Classification.SPAM.value] + smoothing_value
-        model += ("%d  %s  %g  %g  %g  %g\n" % (i, word, ham_word_frequency, ham_word_frequency/ham_word_count,
-                                                spam_word_frequency, spam_word_frequency/spam_word_count))
+        ham_word_frequency = vocabulary[word][Classification.HAM.value]
+        spam_word_frequency = vocabulary[word][Classification.SPAM.value]
+        model += ("%d  %s  %g  %g  %g  %g\n" % (i, word, ham_word_frequency,
+                                                (ham_word_frequency + smoothing_value)/ham_word_count,
+                                                spam_word_frequency,
+                                                (spam_word_frequency + smoothing_value)/spam_word_count))
     with open(file_name, 'w') as file:
         file.write(model)
     if do_print:
