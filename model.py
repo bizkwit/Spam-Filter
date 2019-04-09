@@ -197,7 +197,7 @@ def test_classify(file_name, category, classification, file_counter, do_print, s
 
 def print_metrics(metrics):
     if metrics is not None:
-        print("Spam Accuracy:\t%0.2f%%" % metrics.get_accuracy(Classification.SPAM), '\t',
+        print("\nSpam Accuracy:\t%0.2f%%" % metrics.get_accuracy(Classification.SPAM), '\t',
               "Ham Accuracy:\t%0.2f%%" % metrics.get_accuracy(Classification.HAM), '\t',
               "Total Accuracy:\t%0.2f%%" % metrics.get_accuracy())
 
@@ -211,7 +211,7 @@ def print_metrics(metrics):
 
         print("F1 SPAM:\t\t%0.2f%%" % metrics.get_f1(Classification.SPAM), '\t',
               "F1 HAM:\t\t%0.2f%%" % metrics.get_f1(Classification.HAM), '\t',
-              "Total F1:\t\t\t%0.2f%%" % metrics.get_f1())
+              "Total F1:\t\t\t%0.2f%%\n\n" % metrics.get_f1())
 
 
 def task_selection():
@@ -226,7 +226,6 @@ def task_selection():
                "\t 2. Task 2: Building and evaluating the classifier\n" +
                "\t 3. Task 3: Experiment with your Classifier")
         user_input = input("Please choose your task (1-3): ")
-        metrics = Metrics()
         # //////////////TASK 1\\\\\\\\\\\\\\\
         if user_input is "1":
             HAM.clear()
@@ -261,6 +260,7 @@ def task_selection():
             file_counter = 0
             with open('baseline-result.txt', 'w') as file:
                 file.write('')
+            metrics = Metrics()
             file_counter = test_classify('baseline-result.txt', HAM, Classification.HAM, file_counter, False, smoothing_value, metrics)
             test_classify('baseline-result.txt', SPAM, Classification.SPAM, file_counter, False, smoothing_value, metrics)
             print("Testing DONE!\n")
@@ -289,6 +289,7 @@ def task_selection():
                     SPAM.clear()
                     process_files("test")
                     file_counter = 0
+                    metrics = Metrics()
                     file_counter = test_classify('stopword-result.txt', HAM, Classification.HAM, file_counter, False, smoothing_value, metrics)
                     test_classify('stopword-result.txt', SPAM, Classification.SPAM, file_counter, False, smoothing_value, metrics)
                     print("Experiment DONE!")
@@ -310,6 +311,7 @@ def task_selection():
                     SPAM.clear()
                     process_files("test")
                     file_counter = 0
+                    metrics = Metrics()
                     file_counter = test_classify('wordlength-result.txt', HAM, Classification.HAM, file_counter, False, smoothing_value, metrics)
                     test_classify('wordlength-result.txt', SPAM, Classification.SPAM, file_counter, False, smoothing_value, metrics)
                     print("Experiment DONE!")
