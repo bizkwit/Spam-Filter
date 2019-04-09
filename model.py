@@ -13,57 +13,67 @@ class Metrics:
 
     def get_accuracy(self, classification=None):
         accuracy = -1
+        str_representation = ""
         if classification is None:
             if not (self.total_target[0] == 0 and self.total_target[1] == 0):
                 accuracy = (self.correctly[0] + self.correctly[1]) * 100/(self.total_target[0] + self.total_target[1])
+                str_representation = str(self.correctly[0] + self.correctly[1]) + "/" + str(self.total_target[0] + self.total_target[1])
         elif self.labeled[classification.value] != 0:
             accuracy = self.correctly[classification.value] * 100/self.total_target[classification.value]
-        return accuracy
+            str_representation = str(self.correctly[classification.value]) + "/" + str(self.total_target[classification.value])
+        return accuracy, str_representation
 
     def get_precision(self, classification=None):
         precision = -1
+        str_representation = ""
         if classification is None:
             if not (self.labeled[0] == 0 and self.labeled[1] == 0):
                 precision = (self.correctly[0] + self.correctly[1]) * 100/(self.labeled[0] + self.labeled[1])
+                str_representation = str(self.correctly[0] + self.correctly[1]) + "/" + str(self.labeled[0] + self.labeled[1])
         elif self.labeled[classification.value] != 0:
             precision = self.correctly[classification.value] * 100/self.labeled[classification.value]
-        return precision
+            str_representation = str(self.correctly[classification.value]) + "/"  + str(self.labeled[classification.value])
+        return precision, str_representation
 
     def get_recall(self, classification=None):
         recall = -1
+        str_representation = ""
         if classification is None:
             if not (self.total_target[0] == 0 and self.total_target[1] == 0):
                 recall = (self.correctly[0] + self.correctly[1]) * 100/(self.total_target[0] + self.total_target[1])
+                str_representation = str((self.correctly[0] + self.correctly[1])) + "/" + str(self.total_target[0] + self.total_target[1])
         elif self.total_target[classification.value] != 0:
             recall = self.correctly[classification.value] * 100/self.total_target[classification.value]
-        return recall
+            str_representation = str(self.correctly[classification.value]) + "/" + str(self.total_target[classification.value])
+        return recall, str_representation
 
     def get_f1(self, classification=None):
         f1 = -1
-        precision = self.get_precision(classification)
-        recall = self.get_recall(classification)
+        precision, str = self.get_precision(classification)
+        recall, str = self.get_recall(classification)
         if not (precision <= 0 and recall <= 0):
             f1 = 2 * precision * recall/(precision + recall)
         return f1
 
     def print_metrics(self):
-        print("\n\t\t\tSPAM\tHAM\t\tTOTAL")
-        spam = self.get_accuracy(Classification.SPAM)
-        ham = self.get_accuracy(Classification.HAM)
-        total = self.get_accuracy()
-        print("Accuracy:\t%0.2f%%\t%0.2f%%\t%0.2f%%" % (spam, ham, total))
-        spam = self.get_precision(Classification.SPAM)
-        ham = self.get_precision(Classification.HAM)
-        total = self.get_precision()
-        print("Precision:\t%0.2f%%\t%0.2f%%\t%0.2f%%" % (spam, ham, total))
-        spam = self.get_recall(Classification.SPAM)
-        ham = self.get_recall(Classification.HAM)
-        total = self.get_recall()
-        print("Recall:\t\t%0.2f%%\t%0.2f%%\t%0.2f%%" % (spam, ham, total))
+        print("\n\t\t\t\t\tSPAM\t\t\tHAM\t\t\t\tTOTAL")
+        spam, spam_str = self.get_accuracy(Classification.SPAM)
+        ham, ham_str = self.get_accuracy(Classification.HAM)
+        total, total_str = self.get_accuracy()
+        print("Accuracy:\t(%s)%0.2f%%\t(%s)%0.2f%%\t(%s)%0.2f%%" % (spam_str, spam, ham_str, ham, total_str, total))
+        spam, spam_str = self.get_precision(Classification.SPAM)
+        ham, ham_str = self.get_precision(Classification.HAM)
+        total, total_str = self.get_precision()
+        print("Precision:\t(%s)%0.2f%%\t(%s)%0.2f%%\t(%s)%0.2f%%" % (spam_str, spam, ham_str, ham, total_str, total))
+        spam, spam_str = self.get_recall(Classification.SPAM)
+        ham, ham_str = self.get_recall(Classification.HAM)
+        total, total_str = self.get_recall()
+        print("Recall:\t\t(%s)%0.2f%%\t(%s)%0.2f%%\t(%s)%0.2f%%" % (spam_str, spam, ham_str, ham, total_str, total))
         spam = self.get_f1(Classification.SPAM)
         ham = self.get_f1(Classification.HAM)
         total = self.get_f1()
-        print("F1-measure:\t%0.2f%%\t%0.2f%%\t%0.2f%%\n" % (spam, ham, total))
+        print("F1-measure:\t\t"
+              "\t %0.2f%%\t\t\t %0.2f%%\t\t\t %0.2f%%\n" % (spam, ham, total))
 
 
 class Classification(Enum):
