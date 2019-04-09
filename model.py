@@ -197,21 +197,39 @@ def test_classify(file_name, category, classification, file_counter, do_print, s
 
 def print_metrics(metrics):
     if metrics is not None:
-        print("\nSpam Accuracy:\t%0.2f%%" % metrics.get_accuracy(Classification.SPAM), '\t',
-              "Ham Accuracy:\t%0.2f%%" % metrics.get_accuracy(Classification.HAM), '\t',
-              "Total Accuracy:\t%0.2f%%" % metrics.get_accuracy())
+        print("\n\t\t\tSPAM\tHAM\t\tTOTAL")
+        spam = metrics.get_accuracy(Classification.SPAM)
+        ham = metrics.get_accuracy(Classification.HAM)
+        total = metrics.get_accuracy()
+        print("Accuracy:\t%0.2f%%\t%0.2f%%\t%0.2f%%" % (spam, ham, total))
+        spam = metrics.get_precision(Classification.SPAM)
+        ham = metrics.get_precision(Classification.HAM)
+        total = metrics.get_precision()
+        print("Precision:\t%0.2f%%\t%0.2f%%\t%0.2f%%" % (spam, ham, total))
+        spam = metrics.get_recall(Classification.SPAM)
+        ham = metrics.get_recall(Classification.HAM)
+        total = metrics.get_recall()
+        print("Recall:\t\t%0.2f%%\t%0.2f%%\t%0.2f%%" % (spam, ham, total))
+        spam = metrics.get_f1(Classification.SPAM)
+        ham = metrics.get_f1(Classification.HAM)
+        total = metrics.get_f1()
+        print("F1-measure:\t%0.2f%%\t%0.2f%%\t%0.2f%%\n" % (spam, ham, total))
 
-        print("Spam Precision:\t%0.2f%%" % metrics.get_precision(Classification.SPAM), '\t',
-              "Ham Precision:\t%0.2f%%" % metrics.get_precision(Classification.HAM), '\t',
-              "Total Precision:\t%0.2f%%" % metrics.get_precision())
-
-        print("Spam Recall:\t%0.2f%%" % metrics.get_recall(Classification.SPAM), '\t',
-              "Ham Recall:\t%0.2f%%" % metrics.get_recall(Classification.HAM), '\t',
-              "Total Recall:\t\t%0.2f%%" % metrics.get_recall())
-
-        print("F1 SPAM:\t\t%0.2f%%" % metrics.get_f1(Classification.SPAM), '\t',
-              "F1 HAM:\t\t%0.2f%%" % metrics.get_f1(Classification.HAM), '\t',
-              "Total F1:\t\t\t%0.2f%%\n\n" % metrics.get_f1())
+        # print("\nSpam Accuracy:\t%0.2f%%" % metrics.get_accuracy(Classification.SPAM), '\t',
+        #       "Ham Accuracy:\t%0.2f%%" % metrics.get_accuracy(Classification.HAM), '\t',
+        #       "Total Accuracy:\t%0.2f%%" % metrics.get_accuracy())
+        #
+        # print("Spam Precision:\t%0.2f%%" % metrics.get_precision(Classification.SPAM), '\t',
+        #       "Ham Precision:\t%0.2f%%" % metrics.get_precision(Classification.HAM), '\t',
+        #       "Total Precision:\t%0.2f%%" % metrics.get_precision())
+        #
+        # print("Spam Recall:\t%0.2f%%" % metrics.get_recall(Classification.SPAM), '\t',
+        #       "Ham Recall:\t%0.2f%%" % metrics.get_recall(Classification.HAM), '\t',
+        #       "Total Recall:\t\t%0.2f%%" % metrics.get_recall())
+        #
+        # print("F1 SPAM:\t\t%0.2f%%" % metrics.get_f1(Classification.SPAM), '\t',
+        #       "F1 HAM:\t\t%0.2f%%" % metrics.get_f1(Classification.HAM), '\t',
+        #       "Total F1:\t\t\t%0.2f%%\n\n" % metrics.get_f1())
 
 
 def task_selection():
