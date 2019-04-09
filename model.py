@@ -60,20 +60,19 @@ class Metrics:
         spam, spam_str = self.get_accuracy(Classification.SPAM)
         ham, ham_str = self.get_accuracy(Classification.HAM)
         total, total_str = self.get_accuracy()
-        print("Accuracy:\t(%s)%0.2f%%\t(%s)%0.2f%%\t(%s)%0.2f%%" % (spam_str, spam, ham_str, ham, total_str, total))
+        print("Accuracy:\t(%s) %0.2f%%\t(%s)%0.2f%%\t(%s) %0.2f%%" % (spam_str, spam, ham_str, ham, total_str, total))
         spam, spam_str = self.get_precision(Classification.SPAM)
         ham, ham_str = self.get_precision(Classification.HAM)
         total, total_str = self.get_precision()
-        print("Precision:\t(%s)%0.2f%%\t(%s)%0.2f%%\t(%s)%0.2f%%" % (spam_str, spam, ham_str, ham, total_str, total))
+        print("Precision:\t(%s) %0.2f%%\t(%s)%0.2f%%\t(%s) %0.2f%%" % (spam_str, spam, ham_str, ham, total_str, total))
         spam, spam_str = self.get_recall(Classification.SPAM)
         ham, ham_str = self.get_recall(Classification.HAM)
         total, total_str = self.get_recall()
-        print("Recall:\t\t(%s)%0.2f%%\t(%s)%0.2f%%\t(%s)%0.2f%%" % (spam_str, spam, ham_str, ham, total_str, total))
+        print("Recall:\t\t(%s) %0.2f%%\t(%s)%0.2f%%\t(%s) %0.2f%%" % (spam_str, spam, ham_str, ham, total_str, total))
         spam = self.get_f1(Classification.SPAM)
         ham = self.get_f1(Classification.HAM)
         total = self.get_f1()
-        print("F1-measure:\t\t"
-              "\t %0.2f%%\t\t\t %0.2f%%\t\t\t %0.2f%%\n" % (spam, ham, total))
+        print("F1-measure:\t\t\t  %0.2f%%\t\t\t  %0.2f%%\t\t\t  %0.2f%%\n" % (spam, ham, total))
 
 
 class Classification(Enum):
