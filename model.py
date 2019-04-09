@@ -11,6 +11,49 @@ word_count = [0, 0]
 vocabulary = dict()
 
 
+class Metrics:
+
+    def __init__(self):
+        self.total_target = [0, 0]
+        self.labeled = [0, 0]
+        self.correctly = [0, 0]
+
+    def get_accuracy(self, classification=None):
+        accuracy = -1
+        if classification is None:
+            if not (self.total_target[0] == 0 and self.total_target[1] == 0):
+                accuracy = (self.correctly[0] + self.correctly[1]) * 100/(self.total_target[0] + self.total_target[1])
+        elif self.labeled[classification.value] != 0:
+            accuracy = self.correctly[classification.value] * 100/self.total_target[classification.value]
+        return accuracy
+
+    def get_precision(self, classification=None):
+        precision = -1
+        if classification is None:
+            if not (self.labeled[0] == 0 and self.labeled[1] == 0):
+                precision = (self.correctly[0] + self.correctly[1]) * 100/(self.labeled[0] + self.labeled[1])
+        elif self.labeled[classification.value] != 0:
+            precision = self.correctly[classification.value] * 100/self.labeled[classification.value]
+        return precision
+
+    def get_recall(self, classification=None):
+        recall = -1
+        if classification is None:
+            if not (self.total_target[0] == 0 and self.total_target[1] == 0):
+                recall = (self.correctly[0] + self.correctly[1]) * 100/(self.total_target[0] + self.total_target[1])
+        elif self.total_target[classification.value] != 0:
+            recall = self.correctly[classification.value] * 100/self.total_target[classification.value]
+        return recall
+
+    def get_f1(self, classification=None):
+        f1 = -1
+        precision = self.get_precision(classification)
+        recall = self.get_recall(classification)
+        if not (precision <= 0 and recall <= 0):
+            f1 = 2 * precision * recall/(precision + recall)
+        return f1
+
+
 class Classification(Enum):
     HAM = 0
     SPAM = 1
@@ -104,7 +147,7 @@ def save_model(file_name, smoothing_value=0.0, do_print=False):
         print(model)
 
 
-def test_classify(file_name, category, classification, file_counter=0, do_print=False, smoothing_value=0.5):
+def test_classify(file_name, category, classification, file_counter, do_print, smoothing_value, metrics):
     num_spam_emails = len(SPAM)
     num_hum_emails = len(HAM)
     total_vocabulary_words = len(vocabulary)
@@ -134,9 +177,12 @@ def test_classify(file_name, category, classification, file_counter=0, do_print=
             file_classification = Classification.HAM
         else:
             file_classification = Classification.SPAM
+        metrics.labeled[file_classification.value] += 1
+        metrics.total_target[classification.value] += 1
         if file_classification != classification:
             right_wrong = "wrong"
         else:
+            metrics.correctly[file_classification.value] += 1
             right_wrong = "right"
         classified_email = ("%d  %s  %s  %g  %g  %s  %s\n" % (file_counter, document, file_classification.name.lower(),
                                                               ham_probability, spam_probability,
@@ -149,8 +195,28 @@ def test_classify(file_name, category, classification, file_counter=0, do_print=
     return file_counter
 
 
+def print_metrics(metrics):
+    if metrics is not None:
+        print("Spam Accuracy:\t%0.2f%%" % metrics.get_accuracy(Classification.SPAM), '\t',
+              "Ham Accuracy:\t%0.2f%%" % metrics.get_accuracy(Classification.HAM), '\t',
+              "Total Accuracy:\t%0.2f%%" % metrics.get_accuracy())
+
+        print("Spam Precision:\t%0.2f%%" % metrics.get_precision(Classification.SPAM), '\t',
+              "Ham Precision:\t%0.2f%%" % metrics.get_precision(Classification.HAM), '\t',
+              "Total Precision:\t%0.2f%%" % metrics.get_precision())
+
+        print("Spam Recall:\t%0.2f%%" % metrics.get_recall(Classification.SPAM), '\t',
+              "Ham Recall:\t%0.2f%%" % metrics.get_recall(Classification.HAM), '\t',
+              "Total Recall:\t\t%0.2f%%" % metrics.get_recall())
+
+        print("F1 SPAM:\t\t%0.2f%%" % metrics.get_f1(Classification.SPAM), '\t',
+              "F1 HAM:\t\t%0.2f%%" % metrics.get_f1(Classification.HAM), '\t',
+              "Total F1:\t\t\t%0.2f%%" % metrics.get_f1())
+
+
 def task_selection():
     run_again = True
+    smoothing_value = 0.5
     while run_again:
         print("=================================================================")
         print("\t\t\t SPAM FILTER - MAIN MENU")
@@ -160,6 +226,7 @@ def task_selection():
                "\t 2. Task 2: Building and evaluating the classifier\n" +
                "\t 3. Task 3: Experiment with your Classifier")
         user_input = input("Please choose your task (1-3): ")
+        metrics = Metrics()
         # //////////////TASK 1\\\\\\\\\\\\\\\
         if user_input is "1":
             HAM.clear()
@@ -194,9 +261,10 @@ def task_selection():
             file_counter = 0
             with open('baseline-result.txt', 'w') as file:
                 file.write('')
-            file_counter = test_classify('baseline-result.txt', HAM, Classification.HAM, file_counter, False)
-            test_classify('baseline-result.txt', SPAM, Classification.SPAM, file_counter, False)
+            file_counter = test_classify('baseline-result.txt', HAM, Classification.HAM, file_counter, False, smoothing_value, metrics)
+            test_classify('baseline-result.txt', SPAM, Classification.SPAM, file_counter, False, smoothing_value, metrics)
             print("Testing DONE!\n")
+            print_metrics(metrics)
             answer = input("would you like to run another task? (y/n): ")
             if answer == "n":
                 print("GoodBye")
@@ -216,14 +284,15 @@ def task_selection():
                     process_stop_word("English-Stop-Words.txt")
                     build_vocabulary(HAM, Classification.HAM, True, False)
                     build_vocabulary(SPAM, Classification.SPAM, True, False)
-                    save_model('stopword-model.txt', 0.5, False)
+                    save_model('stopword-model.txt', smoothing_value, False)
                     HAM.clear()
                     SPAM.clear()
                     process_files("test")
                     file_counter = 0
-                    file_counter = test_classify('stopword-result.txt', HAM, Classification.HAM, file_counter, False)
-                    test_classify('stopword-result.txt', SPAM, Classification.SPAM, file_counter, False)
+                    file_counter = test_classify('stopword-result.txt', HAM, Classification.HAM, file_counter, False, smoothing_value, metrics)
+                    test_classify('stopword-result.txt', SPAM, Classification.SPAM, file_counter, False, smoothing_value, metrics)
                     print("Experiment DONE!")
+                    print_metrics(metrics)
                     answer2 = input("run another experiemnt? (y/n): ")
                     if answer2 == "n":
                         experiment_run = False
@@ -236,14 +305,15 @@ def task_selection():
                     process_stop_word("English-Stop-Words.txt")
                     build_vocabulary(HAM, Classification.HAM, True, True)
                     build_vocabulary(SPAM, Classification.SPAM, True, True)
-                    save_model('wordlength-model.txt', 0.5, False)
+                    save_model('wordlength-model.txt', smoothing_value, False)
                     HAM.clear()
                     SPAM.clear()
                     process_files("test")
                     file_counter = 0
-                    file_counter = test_classify('wordlength-result.txt', HAM, Classification.HAM, file_counter, False)
-                    test_classify('wordlength-result.txt', SPAM, Classification.SPAM, file_counter, False)
+                    file_counter = test_classify('wordlength-result.txt', HAM, Classification.HAM, file_counter, False, smoothing_value, metrics)
+                    test_classify('wordlength-result.txt', SPAM, Classification.SPAM, file_counter, False, smoothing_value, metrics)
                     print("Experiment DONE!")
+                    print_metrics(metrics)
                     answer2 = input("run another experiemnt? (y/n): ")
                     if answer2 == "n":
                         experiment_run = False
