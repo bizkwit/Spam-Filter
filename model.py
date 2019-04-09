@@ -150,9 +150,9 @@ class Model:
     def save_model(self, file_name, smoothing_value, do_print=False):
         i = 0
         total_vocabulary_words = len(self.vocabulary)
-        total_vocabulary_words += total_vocabulary_words * smoothing_value
-        ham_word_count = self.word_count[Classification.HAM.value] + total_vocabulary_words
-        spam_word_count = self.word_count[Classification.SPAM.value] + total_vocabulary_words
+        # total_vocabulary_words += total_vocabulary_words * smoothing_value
+        ham_word_count = self.word_count[Classification.HAM.value] + total_vocabulary_words * smoothing_value
+        spam_word_count = self.word_count[Classification.SPAM.value] + total_vocabulary_words * smoothing_value
         model = ""
         for word, frequencies in sorted(self.vocabulary.items()):
             i += 1
@@ -255,7 +255,6 @@ def task_selection():
             model.process_files("train")
             model.process_stop_word("English-Stop-Words.txt")
             model.build_vocabulary(False, False)
-            model.build_vocabulary(False, False)
             model.file_names[Classification.HAM.value].clear()
             model.file_names[Classification.SPAM.value].clear()
             model.process_files("test")
@@ -281,7 +280,6 @@ def task_selection():
                     model.process_files("train")
                     model.process_stop_word("English-Stop-Words.txt")
                     model.build_vocabulary(True, False)
-                    model.build_vocabulary(True, False)
                     model.save_model('stopword-model.txt', smoothing_value, False)
                     model.file_names[Classification.HAM.value].clear()
                     model.file_names[Classification.SPAM.value].clear()
@@ -298,7 +296,6 @@ def task_selection():
                     print("running Experiment 3 : Word Length Filtering")
                     model.process_files("train")
                     model.process_stop_word("English-Stop-Words.txt")
-                    model.build_vocabulary(True, True)
                     model.build_vocabulary(True, True)
                     model.save_model('wordlength-model.txt', smoothing_value, False)
                     model.file_names[Classification.HAM.value].clear()
